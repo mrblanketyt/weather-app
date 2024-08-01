@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hourlyDiv = document.getElementById('hourly');
     const cityInput = document.getElementById('cityInput');
     const unitToggle = document.getElementById('unitToggle');
-    let isCelsius = true;
+    let isCelsius = localStorage.getItem('unit') === 'celsius';
 
     function fetchWeatherByCity() {
         const city = cityInput.value;
@@ -126,7 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleUnitToggle() {
-        isCelsius = !isCelsius;
+        isCelsius = unitToggle.value === 'celsius';
+        localStorage.setItem('unit', unitToggle.value);
         if (cityInput.value) {
             fetchWeather(cityInput.value);
         }
@@ -138,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(`https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${query}`)
                 .then(response => response.json())
                 .then(data => {
-                    const suggestions = data.map(city => `<option value="${city.name}">`).join('');
+                    const suggestions = data.map(city => `<option value="${city.name}"><strong>${city.name}</strong></option>`).join('');
                     document.getElementById('citySuggestions').innerHTML = suggestions;
                 });
         }
@@ -146,4 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('button').addEventListener('click', fetchWeatherByCity);
     unitToggle.addEventListener('change', handleUnitToggle);
+
+    if (!isCelsius) {
+        unitToggle.value = 'fahrenheit';
+    }
 });
