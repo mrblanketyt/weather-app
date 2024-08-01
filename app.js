@@ -3,20 +3,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const weatherDiv = document.getElementById('weather');
     const forecastDiv = document.getElementById('forecast');
     const hourlyDiv = document.getElementById('hourly');
+    const cityInput = document.getElementById('cityInput');
+    const unitToggle = document.getElementById('unitToggle');
+    let isCelsius = true;
 
     function fetchWeatherByCity() {
-        const city = document.getElementById('cityInput').value;
+        const city = cityInput.value;
         if (city) {
+            showLoadingSpinner();
             fetchWeather(city);
         }
     }
 
-    function fetchWeather(city) {
-        weatherDiv.innerHTML = 'Loading...';
+    function showLoadingSpinner() {
+        weatherDiv.innerHTML = '<div class="spinner"></div>';
         forecastDiv.innerHTML = '';
         hourlyDiv.innerHTML = '';
+    }
 
-        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
+    function fetchWeather(city) {
+        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`;
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -55,10 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayWeather(data) {
+        const temp = isCelsius ? data.current.temp_c : data.current.temp_f;
+        const unit = isCelsius ? '°C' : '°F';
         const weather = `
             <h2>${data.location.name}</h2>
             <p>${data.current.condition.text}</p>
-            <p>Temperature: ${data.current.temp_c}°C</p>
+            <p>Temperature: ${temp}${unit}</p>
             <p>Humidity: ${data.current.humidity}%</p>
             <p>Wind speed: ${data.current.wind_kph} kph</p>
         `;
@@ -68,12 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayForecast(forecast) {
         let forecastHTML = '<h2>5-Day Forecast</h2>';
         forecast.forEach(day => {
+            const maxTemp = isCelsius ? day.day.maxtemp_c : day.day.maxtemp_f;
+            const minTemp = isCelsius ? day.day.mintemp_c : day.day.mintemp_f;
+            const unit = isCelsius ? '°C' : '°F';
             forecastHTML += `
-                <div>
+                <div class="forecast-item">
                     <p>${day.date}</p>
                     <p>${day.day.condition.text}</p>
-                    <p>Max: ${day.day.maxtemp_c}°C</p>
-                    <p>Min: ${day.day.mintemp_c}°C</p>
+                    <p>Max: ${maxTemp}${unit}</p>
+                    <p>Min: ${minTemp}${unit}</p>
                 </div>
             `;
         });
@@ -83,11 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayHourly(hourly) {
         let hourlyHTML = '<h2>Hourly Forecast</h2>';
         hourly.forEach(hour => {
+            const temp = isCelsius ? hour.temp_c : hour.temp_f;
+            const unit = isCelsius ? '°C' : '°F';
             hourlyHTML += `
-                <div>
+                <div class="hourly-item">
                     <p>${hour.time.split(' ')[1]}</p>
                     <p>${hour.condition.text}</p>
-                    <p>Temperature: ${hour.temp_c}°C</p>
+                    <p>Temperature: ${temp}${unit}</p>
                 </div>
             `;
         });
@@ -95,22 +108,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayAlerts(alerts) {
+        const alertsDiv = document.getElementById('alerts');
         if (alerts && alerts.alert.length > 0) {
             let alertsHTML = '<h2>Weather Alerts</h2>';
             alerts.alert.forEach(alert => {
                 alertsHTML += `
-                    <div>
+                    <div class="alert-item">
                         <p><strong>${alert.headline}</strong></p>
                         <p>${alert.desc}</p>
                     </div>
                 `;
             });
-            document.getElementById('alerts').innerHTML = alertsHTML;
+            alertsDiv.innerHTML = alertsHTML;
         } else {
-            document.getElementById('alerts').innerHTML = '<p>No weather alerts</p>';
+            alertsDiv.innerHTML = '<p>No weather alerts</p>';
         }
     }
 
-    document.querySelector('button').addEventListener('click', fetchWeatherByCity);
-});
+    function handleUnitToggle() {
+        isCelsius = !isCelsius;
+        if (cityInput.value) {
+            fetchWeather(cityInput.value);
+        }
+    }
 
+    cityInput.addEventListener('input', function () {
+        const query = cityInput.value;
+        if (query.length > 2) {
+            fetch(`https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const suggestions = data.map(city => `<option value="${city.name}">`).join('');
+                    document.getElementById('citySuggestions').innerHTML = suggestions;
+                });
+        }
+    });
+
+    document.querySelector('button').addEventListener('click', fetchWeatherByCity);
+    unitToggle.addEventListener('change', handleUnitToggle);
+});
