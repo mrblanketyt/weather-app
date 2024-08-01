@@ -21,7 +21,8 @@
         </header>
         <main>
             <div class="search-bar">
-                <input type="text" id="cityInput" placeholder="Enter city name">
+                <input type="text" id="cityInput" list="citySuggestions" placeholder="Enter city name">
+                <datalist id="citySuggestions"></datalist>
                 <button>Search</button>
             </div>
             <div id="weather">
