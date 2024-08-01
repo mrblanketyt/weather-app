@@ -6,6 +6,7 @@ body {
     height: 100vh;
     margin: 0;
     background: linear-gradient(to right, #4facfe, #00f2fe);
+    overflow-y: auto;
 }
 
 .container {
@@ -17,66 +18,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-header h1 {
-    color: #333;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-}
-
-nav ul li {
-    display: inline;
-    margin: 0 10px;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-}
-
-.search-bar {
-    margin-bottom: 20px;
-}
-
-.search-bar input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radiusLet's continue updating the CSS to improve the overall look of the app, including adding boxes for better readability.
-
-### Finalized `style.css`:
-
-```css
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background: linear-gradient(to right, #4facfe, #00f2fe);
-}
-
-.container {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
 header {
@@ -131,12 +73,12 @@ nav ul li a {
     background-color: #00f2fe;
 }
 
-#weather, #forecast, #hourly, #alerts {
-    margin-top: 20px;
-}
-
-#weather h2, #forecast h2, #hourly h2, #alerts h2 {
-    color: #333;
+.weather-box, .forecast-box, .hourly-box, .alert-box {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .spinner {
@@ -162,12 +104,3 @@ nav ul li a {
 .forecast-item p, .hourly-item p, .alert-item p {
     margin: 5px 0;
 }
-
-.weather-box, .forecast-box, .hourly-box, .alert-box {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    padding: 20px;
-    margin: 10px 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-    
