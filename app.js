@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiKey = '315ad28fafbb4dcb9ab165456243107';
     const weatherDiv = document.getElementById('weather');
     const forecastDiv = document.getElementById('forecast');
+    const hourlyDiv = document.getElementById('hourly');
 
     function fetchWeatherByCity() {
         const city = document.getElementById('cityInput').value;
@@ -11,12 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchWeather(city) {
+        weatherDiv.innerHTML = 'Loading...';
+        forecastDiv.innerHTML = '';
+        hourlyDiv.innerHTML = '';
+
         const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 displayWeather(data);
                 fetchForecast(city);
+                fetchHourly(city);
             })
             .catch(error => {
                 weatherDiv.innerHTML = '<p>Unable to retrieve weather data.</p>';
@@ -32,6 +38,18 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 forecastDiv.innerHTML = '<p>Unable to retrieve forecast data.</p>';
+            });
+    }
+
+    function fetchHourly(city) {
+        const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&hours=24`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                displayHourly(data.forecast.forecastday[0].hour);
+            })
+            .catch(error => {
+                hourlyDiv.innerHTML = '<p>Unable to retrieve hourly data.</p>';
             });
     }
 
@@ -60,4 +78,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         forecastDiv.innerHTML = forecastHTML;
     }
+
+    function displayHourly(hourly) {
+        let hourlyHTML = '<h2>Hourly Forecast</h2>';
+        hourly.forEach(hour => {
+            hourlyHTML += `
+                <div>
+                    <p>${hour.time}</p>
+                    <p>${hour.condition.text}</p>
+                    <p>Temperature: ${hour.temp_c}°C</p>
+                </div>
+            `;
+        });
+        hourlyDiv.innerHTML = hourlyHTML;
+    }
+
+    document.querySelector('button').addEventListener('click', fetchWeatherByCity);
 });
