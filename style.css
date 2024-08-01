@@ -71,10 +71,10 @@ nav ul li a {
     background-color: #00f2fe;
 }
 
-#weather, #forecast {
+#weather, #forecast, #hourly {
     margin-top: 20px;
 }
 
-#weather h2, #forecast h2 {
+#weather h2, #forecast h2, #hourly h2 {
     color: #333;
 }
