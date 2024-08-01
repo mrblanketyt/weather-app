@@ -30,11 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchForecast(city) {
-        const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=5`;
+        const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=5&alerts=yes`;
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 displayForecast(data.forecast.forecastday);
+                displayAlerts(data.alerts);
             })
             .catch(error => {
                 forecastDiv.innerHTML = '<p>Unable to retrieve forecast data.</p>';
@@ -84,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hourly.forEach(hour => {
             hourlyHTML += `
                 <div>
-                    <p>${hour.time}</p>
+                    <p>${hour.time.split(' ')[1]}</p>
                     <p>${hour.condition.text}</p>
                     <p>Temperature: ${hour.temp_c}°C</p>
                 </div>
@@ -93,5 +94,23 @@ document.addEventListener('DOMContentLoaded', () => {
         hourlyDiv.innerHTML = hourlyHTML;
     }
 
+    function displayAlerts(alerts) {
+        if (alerts && alerts.alert.length > 0) {
+            let alertsHTML = '<h2>Weather Alerts</h2>';
+            alerts.alert.forEach(alert => {
+                alertsHTML += `
+                    <div>
+                        <p><strong>${alert.headline}</strong></p>
+                        <p>${alert.desc}</p>
+                    </div>
+                `;
+            });
+            document.getElementById('alerts').innerHTML = alertsHTML;
+        } else {
+            document.getElementById('alerts').innerHTML = '<p>No weather alerts</p>';
+        }
+    }
+
     document.querySelector('button').addEventListener('click', fetchWeatherByCity);
 });
+
