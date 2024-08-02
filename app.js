@@ -145,15 +145,18 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(`https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${query}`)
                 .then(response => response.json())
                 .then(data => {
-                    const suggestions = data.map(city => `<div class="suggestion-item">${city.name}</div>`).join('');
-                    const suggestionsContainer = document.createElement('div');
-                    suggestionsContainer.classList.add('suggestions-container');
+                    const suggestions = data.map(city => `<div class="suggestion-item">${city.name}, ${city.region}</div>`).join('');
+                    let suggestionsContainer = document.querySelector('.suggestions-container');
+                    if (!suggestionsContainer) {
+                        suggestionsContainer = document.createElement('div');
+                        suggestionsContainer.classList.add('suggestions-container');
+                        document.querySelector('.search-bar').appendChild(suggestionsContainer);
+                    }
                     suggestionsContainer.innerHTML = suggestions;
                     suggestionsContainer.addEventListener('click', function(e) {
                         cityInput.value = e.target.textContent;
-                        suggestionsContainer.remove();
+                        suggestionsContainer.innerHTML = '';
                     });
-                    document.querySelector('.search-bar').appendChild(suggestionsContainer);
                 });
         }
     });
@@ -164,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         forecastDiv.innerHTML = '';
         hourlyDiv.innerHTML = '';
         document.querySelector('.suggestions-container')?.remove();
+        window.scrollTo(0, 0);
     }
 
     document.querySelector('button').addEventListener('click', fetchWeatherByCity);
