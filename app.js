@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayWeather(data);
                 fetchForecast(city);
                 fetchHourly(city);
+                window.scrollTo(0, 0);  // Scroll to the top
             })
             .catch(error => {
                 weatherDiv.innerHTML = '<p>Unable to retrieve weather data.</p>';
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const temp = isCelsius ? data.current.temp_c : data.current.temp_f;
         const unit = isCelsius ? '°C' : '°F';
         const weather = `
-            <h2>${data.location.name}</h2>
+            <h2>${data.location.name}, ${data.location.region}</h2>
             <p>${data.current.condition.text}</p>
             <p>Temperature: ${temp}${unit}</p>
             <p>Humidity: ${data.current.humidity}%</p>
