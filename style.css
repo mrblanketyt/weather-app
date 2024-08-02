@@ -90,20 +90,24 @@ nav ul li a {
 .suggestions-container {
     position: absolute;
     top: 40px;
+    left: 0```css
+.suggestions-container {
+    position: absolute;
+    top: 40px;
     left: 0;
-    width: 60%;
-    background: white;
-    border: 1```css
     width: 60%;
     background: white;
     border: 1px solid #ccc;
     border-radius: 4px;
     z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .suggestion-item {
     padding: 10px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .suggestion-item:hover {
