@@ -28,19 +28,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchWeather(city) {
-        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                displayWeather(data);
-                fetchForecast(city);
-                fetchHourly(city);
-                window.scrollTo(0, 0);  // Scroll to the top
-            })
-            .catch(error => {
-                weatherDiv.innerHTML = '<p>Unable to retrieve weather data.</p>';
-            });
-    }
+    const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            displayWeather(data);
+            fetchForecast(city);
+            fetchHourly(city);
+            window.scrollTo(0, 0);  // Scroll to the top
+        })
+        .catch(error => {
+            weatherDiv.innerHTML = '<p>Unable to retrieve weather data.</p>';
+        });
+}
 
     function fetchForecast(city) {
         const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=5&alerts=yes`;
