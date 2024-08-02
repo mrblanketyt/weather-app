@@ -90,58 +90,8 @@ nav ul li a {
 .suggestions-container {
     position: absolute;
     top: 40px;
-    left: 0```css
-.suggestions-container {
-    position: absolute;
-    top: 40px;
     left: 0;
     width: 60%;
     background: white;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    z-index: 1000;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.suggestion-item {
-    padding: 10px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.suggestion-item:hover {
-    background-color: #f0f0f0;
-}
-
-.weather-box, .forecast-box, .hourly-box, .alert-box {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    padding: 20px;
-    margin: 10px 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.spinner {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 2s linear infinite;
-    margin: 20px auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.forecast-item, .hourly-item, .alert-item {
-    border-bottom: 1px solid #ccc;
-    padding: 10px;
-}
-
-.forecast-item p, .hourly-item p, .alert-item p {
-    margin: 5px 0;
-}
+    border-radius
