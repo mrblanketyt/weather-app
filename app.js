@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayWeather(data);
                 fetchForecast(city);
                 fetchHourly(city);
+            })
+            .then(() => {
                 setTimeout(() => {
                     window.scrollTo(0, 0);  // Ensure the content is loaded before scrolling
                 }, 100);  // Delay to ensure the content is fully loaded
