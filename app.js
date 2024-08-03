@@ -37,9 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchHourly(city);
             })
             .then(() => {
-                setTimeout(() => {
-                    window.scrollTo(0, 0);  // Ensure the content is loaded before scrolling
-                }, 100);  // Delay to ensure the content is fully loaded
+                window.scrollTo(0, 0);  // Scroll to the top
             })
             .catch(error => {
                 weatherDiv.innerHTML = '<p>Unable to retrieve weather data.</p>';
@@ -75,15 +73,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const temp = isCelsius ? data.current.temp_c : data.current.temp_f;
         const unit = isCelsius ? '°C' : '°F';
         const weather = `
-            <h2>${data.location.name}, ${data.location.region}</h2>
-            <p>${data.current.condition.text}</p>
-            <p>Temperature: ${temp}${unit}</p>
-            <p>Humidity: ${data.current.humidity}%</p>
-            <p>Wind speed: ${data.current.wind_kph} kph</p>
+            <div>
+                <h2>${data.location.name}, ${data.location.region}</h2>
+                <p>${data.current.condition.text}</p>
+                <p>Temperature: ${temp}${unit}</p>
+                <p>Humidity: ${data.current.humidity}%</p>
+                <p>Wind speed: ${data.current.wind_kph} kph</p>
+            </div>
         `;
         weatherDiv.innerHTML = weather;
     }
 
+    function displayForecast(forecast) {
+        let forecastHTML = '<h2>5-Day Forecast</hContinuing with the full implementation:
+
+```javascript
     function displayForecast(forecast) {
         let forecastHTML = '<h2>5-Day Forecast</h2>';
         forecast.forEach(day => {
