@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const temp = isCelsius ? data.current.temp_c : data.current.temp_f;
         const unit = isCelsius ? '°C' : '°F';
         const weather = `
-            <div>
+            <div class="weather-item">
                 <h2>${data.location.name}, ${data.location.region}</h2>
                 <p>${data.current.condition.text}</p>
                 <p>Temperature: ${temp}${unit}</p>
