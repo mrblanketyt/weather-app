@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiKey = '315ad28fafbb4dcb9ab165456243107';  // Replace with your actual WeatherAPI key
+    const apiKey = '315ad28fafbb4dcb9ab165456243107';  // WeatherAPI key
     const weatherDiv = document.getElementById('weather');
     const forecastDiv = document.getElementById('forecast');
     const hourlyDiv = document.getElementById('hourly');
     const cityInput = document.getElementById('cityInput');
+    const searchButton = document.getElementById('searchButton');
     const clearSearchBtn = document.getElementById('clearSearch');
 
-    let isCelsius = localStorage.getItem('unit') === 'celsius';
+    let isCelsius = true;
 
     function fetchWeatherByCity() {
         const city = cityInput.value;
@@ -170,8 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo(0, 0);
     }
 
-    document.querySelector('button').addEventListener('click', fetchWeatherByCity);
-    unitToggle.addEventListener('change', handleUnitToggle);
+    searchButton.addEventListener('click', fetchWeatherByCity);
+    clearSearchBtn.addEventListener('click', clearSearch);
 
     if (!isCelsius) {
         unitToggle.value = 'fahrenheit';
