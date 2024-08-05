@@ -1,15 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiKey = '315ad28fafbb4dcb9ab165456243107';
+    const apiKey = '315ad28fafbb4dcb9ab165456243107';  // Replace with your actual WeatherAPI key
     const weatherDiv = document.getElementById('weather');
     const forecastDiv = document.getElementById('forecast');
     const hourlyDiv = document.getElementById('hourly');
     const cityInput = document.getElementById('cityInput');
-    const unitToggle = document.getElementById('unitToggle');
-    const clearSearchBtn = document.createElement('button');
-    clearSearchBtn.textContent = 'Clear Search';
-    clearSearchBtn.classList.add('clear-search-btn');
-    clearSearchBtn.addEventListener('click', clearSearch);
-    document.querySelector('.search-bar').appendChild(clearSearchBtn);
+    const clearSearchBtn = document.getElementById('clearSearch');
 
     let isCelsius = localStorage.getItem('unit') === 'celsius';
 
@@ -35,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayWeather(data);
                 fetchForecast(city);
                 fetchHourly(city);
-            })
-            .then(() => {
-                window.scrollTo(0, 0);  // Scroll to the top
+                setTimeout(() => {
+                    window.scrollTo(0, 0);  // Ensure the content is loaded before scrolling
+                }, 100);  // Delay to ensure the content is fully loaded
             })
             .catch(error => {
                 weatherDiv.innerHTML = '<p>Unable to retrieve weather data.</p>';
@@ -84,10 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
         weatherDiv.innerHTML = weather;
     }
 
-    function displayForecast(forecast) {
-        let forecastHTML = '<h2>5-Day Forecast</hContinuing with the full implementation:
-
-```javascript
     function displayForecast(forecast) {
         let forecastHTML = '<h2>5-Day Forecast</h2>';
         forecast.forEach(day => {
@@ -186,4 +177,3 @@ document.addEventListener('DOMContentLoaded', () => {
         unitToggle.value = 'fahrenheit';
     }
 });
-
