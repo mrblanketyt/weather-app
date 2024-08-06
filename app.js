@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchButton = document.getElementById('searchButton');
     const clearSearchBtn = document.getElementById('clearSearch');
 
-    let isCelsius = true;
+    let isCelsius = false;  // Default to Fahrenheit for US system
 
     function fetchWeatherByCity() {
         const city = cityInput.value;
@@ -68,13 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayWeather(data) {
         const temp = isCelsius ? data.current.temp_c : data.current.temp_f;
         const unit = isCelsius ? '°C' : '°F';
+        const windSpeed = isCelsius ? data.current.wind_kph : data.current.wind_mph;
         const weather = `
             <div class="weather-item">
                 <h2>${data.location.name}, ${data.location.region}</h2>
                 <p>${data.current.condition.text}</p>
                 <p>Temperature: ${temp}${unit}</p>
                 <p>Humidity: ${data.current.humidity}%</p>
-                <p>Wind speed: ${data.current.wind_kph} kph</p>
+                <p>Wind speed: ${windSpeed} ${isCelsius ? 'kph' : 'mph'}</p>
             </div>
         `;
         weatherDiv.innerHTML = weather;
