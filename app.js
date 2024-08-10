@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         weatherDiv.innerHTML = weather;
+        weatherDiv.classList.add('loaded');
     }
 
     function displayForecast(forecast) {
@@ -97,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
         forecastDiv.innerHTML = forecastHTML;
+        forecastDiv.classList.add('loaded');
     }
 
     function displayHourly(hourly) {
@@ -106,13 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const unit = isCelsius ? '°C' : '°F';
             hourlyHTML += `
                 <div class="hourly-item">
-                    <p>${hour.time.split(' ')[1]}</p>
+                    <p>${new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
                     <p>${hour.condition.text}</p>
                     <p>Temperature: ${temp}${unit}</p>
                 </div>
             `;
         });
         hourlyDiv.innerHTML = hourlyHTML;
+        hourlyDiv.classList.add('loaded');
     }
 
     function displayAlerts(alerts) {
@@ -128,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
             alertsDiv.innerHTML = alertsHTML;
+            alertsDiv.classList.add('loaded');
         } else {
             alertsDiv.innerHTML = '<p>No weather alerts</p>';
         }
