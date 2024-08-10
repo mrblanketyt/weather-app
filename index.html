@@ -20,22 +20,34 @@
             </nav>
         </header>
         <main>
-            <div id="weather-tiles">
-                <div class="weather-tile" id="current-weather">
-                    <h2>Current Weather</h2>
-                    <p>Loading...</p>
-                </div>
-                <div class="weather-tile" id="forecast-today">
-                    <h2>Today's Forecast</h2>
-                    <p>Loading...</p>
-                </div>
-                <div class="weather-tile" id="forecast-tomorrow">
-                    <h2>Tomorrow's Forecast</h2>
-                    <p>Loading...</p>
-                </div>
+            <div class="search-bar">
+                <input type="text" id="cityInput" placeholder="Search for a city...">
+                <button id="searchButton">Search</button>
+            </div>
+
+            <div id="weather-alerts" class="weather-tile">
+                <h2>Weather Alerts</h2>
+                <p>Loading...</p>
+            </div>
+
+            <div id="rain-widget" class="weather-tile" style="display: none;">
+                <h2>Rain Forecast</h2>
+                <canvas id="rainChart"></canvas>
+            </div>
+
+            <div id="current-weather" class="weather-tile">
+                <h2>Current Weather</h2>
+                <p>Loading...</p>
+            </div>
+
+            <div id="hourly-forecast" class="weather-tile">
+                <h2>Hourly Forecast</h2>
+                <p>Loading...</p>
             </div>
         </main>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const apiKey = '315ad28fafbb4dcb9ab165456243107';
@@ -53,18 +65,36 @@
             }
 
             function fetchWeather(lat, lon) {
-                const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=2&aqi=no&alerts=no`;
-                
+                const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=1&aqi=no&alerts=yes`;
+
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
+                        displayAlerts(data);
                         displayCurrentWeather(data);
-                        displayForecast(data);
+                        displayHourlyForecast(data);
+                        displayRainWidget(data);
                     })
                     .catch(error => {
                         showError('Error fetching weather data.');
                         console.error('Error:', error);
                     });
+            }
+
+            function displayAlerts(data) {
+                const alertsDiv = document.getElementById('weather-alerts');
+                const alerts = data.alerts.alert || [];
+                
+                if (alerts.length > 0) {
+                    alertsDiv.innerHTML = alerts.map(alert => `
+                        <div class="alert-item">
+                            <img src="icons/alert.png" alt="Alert icon">
+                            <p><strong>${alert.headline}</strong>: ${alert.desc}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    alertsDiv.innerHTML = '<p>No current weather alerts.</p>';
+                }
             }
 
             function displayCurrentWeather(data) {
@@ -76,27 +106,59 @@
                 const weatherTile = document.getElementById('current-weather');
                 weatherTile.innerHTML = `
                     <h2>Current Weather in ${location}</h2>
+                    <img src="${currentWeather.condition.icon}" alt="Weather icon">
                     <p>${condition}, ${temp}°F</p>
                 `;
             }
 
-            function displayForecast(data) {
-                const forecast = data.forecast.forecastday;
+            function displayHourlyForecast(data) {
+                const hourly = data.forecast.forecastday[0].hour;
+                const hourlyTile = document.getElementById('hourly-forecast');
+                hourlyTile.innerHTML = '<h2>Hourly Forecast</h2>';
 
-                const todayTile = document.getElementById('forecast-today');
-                const tomorrowTile = document.getElementById('forecast-tomorrow');
+                hourlyTile.innerHTML += hourly.map(hour => `
+                    <div class="hour-item">
+                        <p>${new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
+                        <img src="${hour.condition.icon}" alt="Weather icon">
+                        <p>${hour.condition.text}, ${hour.temp_f}°F</p>
+                    </div>
+                `).join('');
+            }
 
-                todayTile.innerHTML = `
-                    <h2>Today's Forecast</h2>
-                    <p>${forecast[0].day.condition.text}</p>
-                    <p>Max: ${forecast[0].day.maxtemp_f}°F, Min: ${forecast[0].day.mintemp_f}°F</p>
-                `;
+            function displayRainWidget(data) {
+                const hourly = data.forecast.forecastday[0].hour;
+                const rainData = hourly.map(hour => hour.chance_of_rain);
 
-                tomorrowTile.innerHTML = `
-                    <h2>Tomorrow's Forecast</h2>
-                    <p>${forecast[1].day.condition.text}</p>
-                    <p>Max: ${forecast[1].day.maxtemp_f}°F, Min: ${forecast[1].day.mintemp_f}°F</p>
-                `;
+                if (rainData.some(chance => chance > 0)) {
+                    document.getElementById('rain-widget').style.display = 'block';
+                    const ctx = document.getElementById('rainChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: hourly.map(hour => new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })),
+                            datasets: [{
+                                label: 'Chance of Rain (%)',
+                                data: rainData,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }
             }
 
             function showError(message) {
@@ -107,6 +169,28 @@
                         <p>${message}</p>
                     </div>
                 `;
+            }
+
+            document.getElementById('searchButton').addEventListener('click', () => {
+                const city = document.getElementById('cityInput').value;
+                fetchWeatherByCity(city);
+            });
+
+            function fetchWeatherByCity(city) {
+                const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=1&aqi=no&alerts=yes`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayAlerts(data);
+                        displayCurrentWeather(data);
+                        displayHourlyForecast(data);
+                        displayRainWidget(data);
+                    })
+                    .catch(error => {
+                        showError('Error fetching weather data.');
+                        console.error('Error:', error);
+                    });
             }
         });
     </script>
