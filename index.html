@@ -7,8 +7,41 @@
     <link rel="stylesheet" href="style.css">
     <style>
         #rainChart {
-            max-height: 150px; /* Control chart size */
-            max-width: 100%;   /* Ensure it fits within the container */
+            max-height: 100px;
+            max-width: 100%;   
+        }
+        .rain-bar {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scaleY(0.8); opacity: 0.6; }
+            50% { transform: scaleY(1.1); opacity: 1; }
+            100% { transform: scaleY(0.8); opacity: 0.6; }
+        }
+
+        .suggestions-container {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            width: 60%;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
@@ -29,6 +62,7 @@
             <div class="search-bar">
                 <input type="text" id="cityInput" placeholder="Search for a city...">
                 <button id="searchButton">Search</button>
+                <div class="suggestions-container"></div>
             </div>
 
             <div id="weather-alerts" class="weather-tile">
@@ -154,13 +188,19 @@
                                 backgroundColor: 'rgba(54, 162, 235, 0.8)',
                                 borderColor: 'rgba(54, 162, 235, 1)',
                                 borderWidth: 1,
+                                barPercentage: 0.5,
+                                categoryPercentage: 1.0
                             }]
                         },
                         options: {
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    max: 100
+                                    max: 100,
+                                    display: false,  // Hide Y axis for a cleaner look
+                                },
+                                x: {
+                                    display: false,  // Hide X axis for a cleaner look
                                 }
                             },
                             plugins: {
@@ -168,9 +208,17 @@
                                     display: false
                                 }
                             },
+                            animation: {
+                                onComplete: () => {
+                                    const bars = document.querySelectorAll('.rain-bar');
+                                    bars.forEach(bar => bar.classList.add('pulse'));
+                                }
+                            },
                             maintainAspectRatio: false,
                         }
                     });
+                } else {
+                    document.getElementById('rain-widget').style.display = 'none';
                 }
             }
 
@@ -187,6 +235,29 @@
             document.getElementById('searchButton').addEventListener('click', () => {
                 const city = document.getElementById('cityInput').value;
                 fetchWeatherByCity(city);
+            });
+
+            document.getElementById('cityInput').addEventListener('input', function () {
+                const query = cityInput.value;
+                if (query.length > 0) {
+                    fetch(`https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const suggestions = data.map(city => `<div class="suggestion-item">${city.name}, ${city.region}</div>`).join('');
+                            let suggestionsContainer = document.querySelector('.suggestions-container');
+                            suggestionsContainer.innerHTML = suggestions;
+                            suggestionsContainer.style.display = 'block';
+                        });
+                }
+            });
+
+                        document.querySelector('.suggestions-container').addEventListener('click', function(e) {
+                if (e.target && e.target.matches('.suggestion-item')) {
+                    const selectedCity = e.target.textContent;
+                    document.getElementById('cityInput').value = selectedCity;
+                    document.querySelector('.suggestions-container').style.display = 'none';
+                    fetchWeatherByCity(selectedCity);
+                }
             });
 
             function fetchWeatherByCity(city) {
