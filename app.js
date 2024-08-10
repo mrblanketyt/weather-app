@@ -69,9 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const temp = isCelsius ? data.current.temp_c : data.current.temp_f;
         const unit = isCelsius ? '°C' : '°F';
         const windSpeed = isCelsius ? data.current.wind_kph : data.current.wind_mph;
+        const iconUrl = data.current.condition.icon;  // Weather icon
         const weather = `
             <div class="weather-item">
                 <h2>${data.location.name}, ${data.location.region}</h2>
+                <img src="${iconUrl}" alt="Weather icon">
                 <p>${data.current.condition.text}</p>
                 <p>Temperature: ${temp}${unit}</p>
                 <p>Humidity: ${data.current.humidity}%</p>
@@ -88,9 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const maxTemp = isCelsius ? day.day.maxtemp_c : day.day.maxtemp_f;
             const minTemp = isCelsius ? day.day.mintemp_c : day.day.mintemp_f;
             const unit = isCelsius ? '°C' : '°F';
+            const dayName = new Date(day.date).toLocaleDateString('en-US', { weekday: 'long' }); // Day name
+            const iconUrl = day.day.condition.icon;  // Weather icon
             forecastHTML += `
                 <div class="forecast-item">
-                    <p>${day.date}</p>
+                    <p>${dayName}</p>
+                    <img src="${iconUrl}" alt="Weather icon">
                     <p>${day.day.condition.text}</p>
                     <p>Max: ${maxTemp}${unit}</p>
                     <p>Min: ${minTemp}${unit}</p>
@@ -106,9 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
         hourly.forEach(hour => {
             const temp = isCelsius ? hour.temp_c : hour.temp_f;
             const unit = isCelsius ? '°C' : '°F';
+            const iconUrl = hour.condition.icon;  // Weather icon
             hourlyHTML += `
                 <div class="hourly-item">
                     <p>${new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
+                    <img src="${iconUrl}" alt="Weather icon">
                     <p>${hour.condition.text}</p>
                     <p>Temperature: ${temp}${unit}</p>
                 </div>
