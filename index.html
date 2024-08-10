@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Weather App</title>
+    <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,18 +20,95 @@
             </nav>
         </header>
         <main>
-            <div class="search-bar">
-                <input type="text" id="cityInput" list="citySuggestions" placeholder="Enter city name">
-                <datalist id="citySuggestions"></datalist>
-                <button id="searchButton">Search</button>
-                <button id="clearSearch" class="clear-search-btn">Clear</button>
+            <div id="weather-tiles">
+                <div class="weather-tile" id="current-weather">
+                    <h2>Current Weather</h2>
+                    <p>Loading...</p>
+                </div>
+                <div class="weather-tile" id="forecast-today">
+                    <h2>Today's Forecast</h2>
+                    <p>Loading...</p>
+                </div>
+                <div class="weather-tile" id="forecast-tomorrow">
+                    <h2>Tomorrow's Forecast</h2>
+                    <p>Loading...</p>
+                </div>
             </div>
-            <div id="weather" class="weather-box"></div>
-            <div id="hourly" class="hourly-box"></div>
-            <div id="forecast" class="forecast-box"></div>
-            <div id="alerts" class="alert-box"></div>
         </main>
     </div>
-    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiKey = '315ad28fafbb4dcb9ab165456243107';
+
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    fetchWeather(lat, lon);
+                }, (error) => {
+                    showError('Location access is needed to display weather information.');
+                });
+            } else {
+                showError('Geolocation is not supported by this browser.');
+            }
+
+            function fetchWeather(lat, lon) {
+                const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=2&aqi=no&alerts=no`;
+                
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayCurrentWeather(data);
+                        displayForecast(data);
+                    })
+                    .catch(error => {
+                        showError('Error fetching weather data.');
+                        console.error('Error:', error);
+                    });
+            }
+
+            function displayCurrentWeather(data) {
+                const currentWeather = data.current;
+                const location = `${data.location.name}, ${data.location.region}`;
+                const temp = currentWeather.temp_f;
+                const condition = currentWeather.condition.text;
+
+                const weatherTile = document.getElementById('current-weather');
+                weatherTile.innerHTML = `
+                    <h2>Current Weather in ${location}</h2>
+                    <p>${condition}, ${temp}°F</p>
+                `;
+            }
+
+            function displayForecast(data) {
+                const forecast = data.forecast.forecastday;
+
+                const todayTile = document.getElementById('forecast-today');
+                const tomorrowTile = document.getElementById('forecast-tomorrow');
+
+                todayTile.innerHTML = `
+                    <h2>Today's Forecast</h2>
+                    <p>${forecast[0].day.condition.text}</p>
+                    <p>Max: ${forecast[0].day.maxtemp_f}°F, Min: ${forecast[0].day.mintemp_f}°F</p>
+                `;
+
+                tomorrowTile.innerHTML = `
+                    <h2>Tomorrow's Forecast</h2>
+                    <p>${forecast[1].day.condition.text}</p>
+                    <p>Max: ${forecast[1].day.maxtemp_f}°F, Min: ${forecast[1].day.mintemp_f}°F</p>
+                `;
+            }
+
+            function showError(message) {
+                const weatherTiles = document.getElementById('weather-tiles');
+                weatherTiles.innerHTML = `
+                    <div class="weather-tile">
+                        <h2>Error</h2>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
 </body>
 </html>
