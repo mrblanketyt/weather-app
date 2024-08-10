@@ -6,13 +6,37 @@
     <title>Weather Radar</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
         #map {
-            height: 100vh;
+            height: 90vh;  /* Adjusted to leave space for the back button */
             width: 100%;
+        }
+
+        #backButton {
+            height: 10vh;  /* Height of the back button */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #4facfe;
+            color: white;
+            font-size: 1.2em;
+            text-decoration: none;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #backButton:hover {
+            background-color: #00f2fe;
         }
     </style>
 </head>
 <body>
+    <a id="backButton" href="index.html">Back to Home</a>
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
