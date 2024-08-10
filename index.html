@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        #rainChart {
+            max-height: 150px; /* Control chart size */
+            max-width: 100%;   /* Ensure it fits within the container */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -31,7 +37,7 @@
             </div>
 
             <div id="rain-widget" class="weather-tile" style="display: none;">
-                <h2>Rain Forecast</h2>
+                <h2 id="rain-status"></h2>
                 <canvas id="rainChart"></canvas>
             </div>
 
@@ -128,20 +134,26 @@
             function displayRainWidget(data) {
                 const hourly = data.forecast.forecastday[0].hour;
                 const rainData = hourly.map(hour => hour.chance_of_rain);
+                const currentHour = new Date().getHours();
 
-                if (rainData.some(chance => chance > 0)) {
+                // Filter for the next hour
+                const rainNextHour = rainData.slice(currentHour, currentHour + 6);
+
+                if (rainNextHour.some(chance => chance > 0)) {
                     document.getElementById('rain-widget').style.display = 'block';
+                    document.getElementById('rain-status').textContent = "Rain Forecast";
+
                     const ctx = document.getElementById('rainChart').getContext('2d');
                     new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: hourly.map(hour => new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })),
+                            labels: ["Now", "10m", "20m", "30m", "40m", "50m"],
                             datasets: [{
-                                label: 'Chance of Rain (%)',
-                                data: rainData,
-                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                label: 'Rain (%)',
+                                data: rainNextHour,
+                                backgroundColor: 'rgba(54, 162, 235, 0.8)',
                                 borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
+                                borderWidth: 1,
                             }]
                         },
                         options: {
@@ -155,7 +167,8 @@
                                 legend: {
                                     display: false
                                 }
-                            }
+                            },
+                            maintainAspectRatio: false,
                         }
                     });
                 }
