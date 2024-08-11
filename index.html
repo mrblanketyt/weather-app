@@ -166,61 +166,64 @@
             }
 
             function displayRainWidget(data) {
-                const hourly = data.forecast.forecastday[0].hour;
-                const rainData = hourly.map(hour => hour.chance_of_rain);
-                const currentHour = new Date().getHours();
+    const hourly = data.forecast.forecastday[0].hour;
+    const rainData = hourly.map(hour => hour.chance_of_rain);
+    const currentHour = new Date().getHours();
 
-                // Filter for the next hour
-                const rainNextHour = rainData.slice(currentHour, currentHour + 6);
+    // Filter for the next hour
+    const rainNextHour = rainData.slice(currentHour, currentHour + 6);
 
-                if (rainNextHour.some(chance => chance > 0)) {
-                    document.getElementById('rain-widget').style.display = 'block';
-                    document.getElementById('rain-status').textContent = "Rain Forecast";
+    if (rainNextHour.some(chance => chance > 0)) {
+        document.getElementById('rain-widget').style.display = 'block';
+        document.getElementById('rain-status').textContent = "Rain Forecast";
 
-                    const ctx = document.getElementById('rainChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ["Now", "10m", "20m", "30m", "40m", "50m"],
-                            datasets: [{
-                                label: 'Rain (%)',
-                                data: rainNextHour,
-                                backgroundColor: 'rgba(54, 162, 235, 0.8)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1,
-                                barPercentage: 0.5,
-                                categoryPercentage: 1.0
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    max: 100,
-                                    display: false,  // Hide Y axis for a cleaner look
-                                },
-                                x: {
-                                    display: false,  // Hide X axis for a cleaner look
-                                }
-                            },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                }
-                            },
-                            animation: {
-                                onComplete: () => {
-                                    const bars = document.querySelectorAll('.rain-bar');
-                                    bars.forEach(bar => bar.classList.add('pulse'));
-                                }
-                            },
-                            maintainAspectRatio: false,
+        const ctx = document.getElementById('rainChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Now", "10m", "20m", "30m", "40m", "50m"],
+                datasets: [{
+                    label: 'Rain (%)',
+                    data: rainNextHour,
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.9
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        display: false,  // Hide Y axis for a cleaner look
+                    },
+                    x: {
+                        grid: {
+                            display: false  // Hide grid lines for a cleaner look
                         }
-                    });
-                } else {
-                    document.getElementById('rain-widget').style.display = 'none';
-                }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                animation: {
+                    onComplete: () => {
+                        const bars = document.querySelectorAll('.rain-bar');
+                        bars.forEach(bar => bar.classList.add('pulse'));
+                    }
+                },
+                maintainAspectRatio: false,
             }
+        });
+    } else {
+        document.getElementById('rain-widget').style.display = 'none';
+    }
+}
+
 
             function showError(message) {
                 const weatherTiles = document.getElementById('weather-tiles');
