@@ -6,23 +6,82 @@
     <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+
         #rain-bars {
             display: flex;
             align-items: flex-end;
             justify-content: space-between;
             height: 60px;
             margin-top: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            padding: 10px;
         }
 
         .rain-bar {
-            width: 10%;
+            width: 8%;
             background-color: rgba(54, 162, 235, 0.8);
             animation: pulse 1.5s infinite;
+            transition: height 0.5s ease-in-out;
+            border-radius: 3px;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scaleY(0.9); opacity: 0.7; }
             50% { transform: scaleY(1.1); opacity: 1; }
+        }
+
+        #rain-status {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .rain-time-label {
+            font-size: 0.8em;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .weather-tile {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .suggestions-container {
@@ -94,7 +153,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const apiKey = '315ad28fafbb4dcb9ab165456243107';
+            const apiKey = 'YOUR_API_KEY_HERE';
 
             if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition((position) => {
@@ -174,12 +233,12 @@
                 const rainData = hourly.map(hour => hour.chance_of_rain);
                 const currentHour = new Date().getHours();
 
-                // Filter for the next hour
+                // Filter for the next 60 minutes, in 10-minute intervals
                 const rainNextHour = rainData.slice(currentHour, currentHour + 6);
 
                 if (rainNextHour.some(chance => chance > 0)) {
                     document.getElementById('rain-widget').style.display = 'block';
-                    document.getElementById('rain-status').textContent = "Rain Forecast";
+                    document.getElementById('rain-status').textContent = `Rain is expected to stop in ${calculateRainStoppingTime(rainNextHour)} min.`;
 
                     const rainBarsContainer = document.getElementById('rain-bars');
                     rainBarsContainer.innerHTML = ''; // Clear previous bars
@@ -187,19 +246,29 @@
                     rainNextHour.forEach((chance, index) => {
                         const rainBar = document.createElement('div');
                         rainBar.className = 'rain-bar';
-                        rainBar.style.height = `${chance}%`; // Set height based on rain chance
+                        rainBar.style.height = `${Math.min(chance, 100)}%`; // Limit height to 100%
 
-                        // Create label for the bottom of each bar
                         const timeLabel = document.createElement('div');
                         timeLabel.className = 'rain-time-label';
                         timeLabel.innerText = `${index * 10}m`;
 
-                        // Add the label and bar to the container
                         rainBarsContainer.appendChild(rainBar);
+                        rainBarsContainer.appendChild(timeLabel);
                     });
                 } else {
                     document.getElementById('rain-widget').style.display = 'none';
                 }
+                } 
+            }
+
+            function calculateRainStoppingTime(rainNextHour) {
+                let timeUntilStop = 0;
+                for (let i = 0; i < rainNextHour.length; i++) {
+                    if (rainNextHour[i] > 0) {
+                        timeUntilStop = (i + 1) * 10;
+                    }
+                }
+                return timeUntilStop;
             }
 
             function showError(message) {
@@ -243,7 +312,7 @@
             function fetchWeatherByCity(city) {
                 const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=1&aqi=no&alerts=yes`;
 
-                                fetch(url)
+                fetch(url)
                     .then(response => response.json())
                     .then(data => {
                         displayAlerts(data);
